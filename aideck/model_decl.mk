@@ -11,11 +11,11 @@ MODEL_PREFIX?=
 MODEL_PYTHON=python3
 
 ifeq ($(ONNX), 1)
-	TRAINED_MODEL ?= model/$(MODEL_PREFIX).onnx
-	MODEL_PATH     = $(MODEL_BUILD)/$(MODEL_PREFIX).onnx
+  TRAINED_MODEL ?= model/$(MODEL_PREFIX).onnx
+  MODEL_PATH     = $(MODEL_BUILD)/$(MODEL_PREFIX).onnx
 else
-	TRAINED_MODEL ?= model/$(MODEL_PREFIX).tflite
-	MODEL_PATH     = $(MODEL_BUILD)/$(MODEL_PREFIX).tflite
+  TRAINED_MODEL ?= model/$(MODEL_PREFIX).tflite
+  MODEL_PATH     = $(MODEL_BUILD)/$(MODEL_PREFIX).tflite
 endif
 MODEL_COMMON ?= common
 MODEL_COMMON_INC ?= $(GAP_SDK_HOME)/libs/gap_lib/include
@@ -36,7 +36,7 @@ MODEL_GEN_CLEAN = $(MODEL_GEN_C) $(addsuffix .h, $(MODEL_GEN))
 MODEL_GEN_EXE = $(MODEL_BUILD)/GenTile
 
 ifdef MODEL_QUANTIZED
-	NNTOOL_EXTRA_FLAGS = -q
+  NNTOOL_EXTRA_FLAGS = -q
 endif
 
 MODEL_GENFLAGS_EXTRA =
@@ -44,9 +44,7 @@ MODEL_GENFLAGS_EXTRA =
 EXTRA_GENERATOR_SRC =
 
 $(info script $(NNTOOL_SCRIPT))
-ifndef NNTOOL_SCRIPT
-	NNTOOL_SCRIPT=model/nntool_script
-endif
+
 IMAGES ?= samples
 RM=rm -f
 

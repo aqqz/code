@@ -8,29 +8,29 @@
 # the quantization. This is because in 8 bit mode we used signed
 # 8 bit so the input to the model needs to be shifted 1 bit
 ifdef TRAIN_7BIT
-	MODEL_TRAIN_FLAGS = -c
+  MODEL_TRAIN_FLAGS = -c
 else
-	MODEL_TRAIN_FLAGS =
+  MODEL_TRAIN_FLAGS =
 endif
 
 USE_DISP=1
 
 ifdef USE_DISP
-	SDL_FLAGS= -lSDL2 -lSDL2_ttf
+  SDL_FLAGS= -lSDL2 -lSDL2_ttf
 else
-	SDL_FLAGS=
+  SDL_FLAGS=
 endif
 
 ifdef MODEL_L1_MEMORY
-	MODEL_GEN_EXTRA_FLAGS += --L1 $(MODEL_L1_MEMORY)
+  MODEL_GEN_EXTRA_FLAGS += --L1 $(MODEL_L1_MEMORY)
 endif
 
 ifdef MODEL_L2_MEMORY
-	MODEL_GEN_EXTRA_FLAGS += --L2 $(MODEL_L2_MEMORY)
+  MODEL_GEN_EXTRA_FLAGS += --L2 $(MODEL_L2_MEMORY)
 endif
 
 ifdef MODEL_L3_MEMORY
-	MODEL_GEN_EXTRA_FLAGS += --L3 $(MODEL_L3_MEMORY)
+  MODEL_GEN_EXTRA_FLAGS += --L3 $(MODEL_L3_MEMORY)
 endif
 
 

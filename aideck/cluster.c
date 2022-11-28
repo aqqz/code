@@ -1,5 +1,6 @@
 #include "cluster.h"
 #include "yolo.h"
+#include "main.h"
 
 struct pi_device cluster_dev;
 struct pi_cluster_conf cl_conf;
@@ -24,6 +25,9 @@ void cluster_init(int *err)
 
 void cluster_fun(void *arg)
 {
+    //run nngraph
+    __PREFIX(CNN)(Input_1, Output_1);
+    printf("Model Run completed\n");
     resolve_output();
 }
 

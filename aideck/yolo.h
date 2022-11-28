@@ -5,9 +5,9 @@
 
 #define  SS     7
 #define  B      2
-#define  C      20
-#define IMG_W   28
-#define IMG_H   28
+#define  C      4
+#define IMG_W   224
+#define IMG_H   224
 #define IMG_C   1
 #define IOU_THRESHOLD 0.5
 #define CON_THRESHOLD 0.5
@@ -49,7 +49,7 @@ int list_insert(box_list_t *phead, box_trans_t *box);
 int list_delete(box_list_t *phead, box_trans_t *box);
 
 void nms(box_list_t *before, box_list_t *after);
-extern void resolve_output(void);
+void resolve_output(void);
 
 float max(float a, float b);
 float min(float a, float b);

@@ -10,9 +10,10 @@
 
 #define IMG_SIZE        (IMG_W*IMG_H*IMG_C)
 #define YOLO_SIZE		(SS*SS*(5*B+C))  
-//#define USE_IMAGE
+#define USE_IMAGE
 //#define USE_CAMERA
 //#define SAVE_IMG
+//#define USE_UART
 
 unsigned char *Input_1; //模型输入
 signed char *Output_1; //量化模型输出
@@ -88,6 +89,7 @@ int appstart()
 	#endif
 
 	//uart init
+	#ifdef USE_UART
 	uart_init(&err);
 	if(err < 0)
 	{
@@ -102,7 +104,8 @@ int appstart()
 		uart_send(&uart, sendbuf, sizeof(sendbuf));
 		pi_time_wait_us(500000); //500ms
 	}
-	
+	#endif
+
 	//cluster init
 	cluster_init(&err);
 	if(err < 0)
@@ -132,7 +135,8 @@ int appstart()
 	free(Input_1, IMG_SIZE);
 
 	//close dev
-	uart_close();
+	//camera_close();
+	//uart_close();
 	cluster_close();
 
 	printf("End\n");
