@@ -5,17 +5,16 @@
 # of the BSD license.  See the LICENSE file for details.
 
 ifndef GAP_SDK_HOME
-	$(error Source sourceme in gap_sdk first)
+  $(error Source sourceme in gap_sdk first)
 endif
-pulpChip = GAP
-PULP_APP = main
-APP = main
-MAIN = $(APP).c
 
 MODEL_PREFIX=model
 
-LOAD_QUANTIZATION= #-q #to load a tflite quantized model
-IMAGE=$(CURDIR)/samples/5223_5.pgm
+
+MODEL_QUANTIZED=1
+TRAINED_MODEL=model/yolo.tflite
+
+IMAGE=$(CURDIR)/samples/0_350.pgm
 
 io=host
 
@@ -23,44 +22,22 @@ io=host
 RAM_FLASH_TYPE ?= HYPER
 PMSIS_OS=freertos
 
-ifeq '$(RAM_FLASH_TYPE)' 'HYPER'
 APP_CFLAGS += -DUSE_HYPER
 MODEL_L3_EXEC=hram
 MODEL_L3_CONST=hflash
-else
-APP_CFLAGS += -DUSE_SPI
-CONFIG_SPIRAM = 1
-MODEL_L3_EXEC=qspiram
-MODEL_L3_CONST=qpsiflash
-endif
 
 
-MODEL_FP16 ?= 0
-ifeq ($(MODEL_FP16), 1)
-	NNTOOL_SCRIPT = model/nntool_script_fp16
-	MODEL_SUFFIX = _FP16
-	MAIN = $(MODEL_PREFIX)_fp16.c
+ifeq ($(MODEL_QUANTIZED), 1)
+  NNTOOL_SCRIPT=model/nntool_script_q
 else
-	QUANT_BITS?=8
-	BUILD_DIR=BUILD
-	ifeq ($(QUANT_BITS), 8)
-		MODEL_SQ8=1
-		ifeq '$(RAM_FLASH_TYPE)' 'HYPER'
-			NNTOOL_SCRIPT=model/nntool_script
-		else
-			NNTOOL_SCRIPT=model/nntool_script_spi
-		endif
-			MODEL_SUFFIX = _SQ8BIT
-	else
-		MODEL_POW2=1
-		ifeq ($(QUANT_BITS),16)
-			NNTOOL_SCRIPT=model/nntool_script16
-			MODEL_SUFFIX = _16BIT
-		else
-			$(error Don\'t know how to build with this bit width)
-		endif
-	endif
+  NNTOOL_SCRIPT=model/nntool_script
 endif
+
+QUANT_BITS?=8
+BUILD_DIR=BUILD
+MODEL_SQ8=1
+MODEL_SUFFIX = _SQ8BIT
+
 
 $(info Building GAP8 mode with $(QUANT_BITS) bit quantization)
 
@@ -76,16 +53,18 @@ MODEL_L1_MEMORY=$(shell expr 60000 \- $(TOTAL_STACK_SIZE))
 MODEL_L2_MEMORY=250000
 MODEL_L3_MEMORY=8388608
 
+pulpChip = GAP
+PULP_APP = main
 
-APP_SRCS += $(MAIN) $(MODEL_GEN_C) $(MODEL_COMMON_SRCS) $(CNN_LIB)
-APP_SRCS += cluster.c camera.c uart.c yolo.c
+APP = main
+APP_SRCS += $(MODEL_GEN_C) $(MODEL_COMMON_SRCS) $(CNN_LIB)
+APP_SRCS += camera.c cluster.c main.c uart.c yolo.c
 
 APP_CFLAGS += -g -O3 -mno-memcpy -fno-tree-loop-distribute-patterns
 APP_CFLAGS += -I. -I$(MODEL_COMMON_INC) -I$(TILER_EMU_INC) -I$(TILER_INC) $(CNN_LIB_INCLUDE) -I$(MODEL_BUILD)
 APP_CFLAGS += -DPERF -DAT_MODEL_PREFIX=$(MODEL_PREFIX) $(MODEL_SIZE_CFLAGS)
 APP_CFLAGS += -DSTACK_SIZE=$(CLUSTER_STACK_SIZE) -DSLAVE_STACK_SIZE=$(CLUSTER_SLAVE_STACK_SIZE)
 APP_CFLAGS += -DAT_IMAGE=$(IMAGE)
-
 APP_CFLAGS += -DSLICE_MODE
 #APP_CFLAGS += -DQVGA_IMG
 
