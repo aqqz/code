@@ -1,4 +1,4 @@
-CRAZYFLIE_BASE := ../../../projects/crazyflie/crazyflie-firmware
+CRAZYFLIE_BASE := ../../crazyflie/crazyflie-firmware
 
 OOT_CONFIG := $(PWD)/app-config
 
