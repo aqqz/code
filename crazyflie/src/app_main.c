@@ -19,11 +19,10 @@ typedef struct {
 } box_trans_t;
 
 uint8_t recvbuf[BUFFER_SIZE];
-box_trans_t recv[5];
 
-int takeoff = 0;
-int count = 0;
-int area = 0;
+TaskHandle_t uartTaskHandle = NULL;
+TaskHandle_t flyTaskHandle = NULL;
+
 box_trans_t* uart1GetStruct()
 {
   memset(recvbuf, 0, sizeof(recvbuf));
@@ -37,46 +36,28 @@ box_trans_t* uart1GetStruct()
   return (box_trans_t *)recvbuf;
 }
 
-void appMain() {
-  DEBUG_PRINT("Waiting for activation ...\n");
-  uart1Init(115200);
-  //wait 3 second
+void uartTask(void *pvParameters)
+{
+  while(1)
+  {
+    DEBUG_PRINT("uartTask\n");
+  }
+}
+
+void flyTask(void *pvParameters)
+{
+  while(1)
+  {
+    DEBUG_PRINT("flyTask\n");
+  }
+}
+
+void appMain() 
+{
   vTaskDelay(pdMS_TO_TICKS(3000));
 
-  while(1) 
-  {
-    box_trans_t *temp = uart1GetStruct();
-    
-    DEBUG_PRINT("con: %f id: %d prob: %f [ %d, %d, %d, %d ] \n", (double)(temp->box_conf), temp->box_id, (double)(temp->box_prob), (int)(temp->box_trans_info[0]), (int)(temp->box_trans_info[1]), (int)(temp->box_trans_info[2]), (int)(temp->box_trans_info[3]));
-    // count++;
-    // //takeoff
-    // if(takeoff == 0)
-    // {
-    //   crtpCommanderHighLevelTakeoff(1.0f, 1.0f);
-    //   takeoff = 1;
-    // }
-    // //land
-    // if(count==300)
-    // {
-    //   crtpCommanderHighLevelLand(0.0f, 1.0f);
-    //   takeoff = 0;
-    //   count = 0;
-    //   return ;
-    // }
-    
-    // if(temp->box_id == 2)
-    // {
-    //   area = (temp->box_trans_info[2] - temp->box_trans_info[0]) * (temp->box_trans_info[3] - temp->box_trans_info[1]);
-    
-    //   if(area < 224*224 / 4)
-    //   {
-    //     crtpCommanderHighLevelGoTo(0.1f, 0, 0, 0, 1.0f, 1);
-    //   }
-    //   else
-    //   {
-    //     crtpCommanderHighLevelGoTo(-0.1f, 0, 0, 0, 1.0f, 1);
-    //   }
-    // }
-    // vTaskDelay(pdMS_TO_TICKS(10));
-  }
+  xTaskCreate(uartTask, "UARTTASK", 128, NULL, 1, &uartTaskHandle);
+  xTaskCreate(flyTask, "FLYTASK", 128, NULL, 1, &flyTaskHandle);
+
+  while(1);
 }
