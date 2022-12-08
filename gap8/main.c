@@ -2,13 +2,15 @@
 
 //#define USE_IMAGE
 #define USE_CAMERA
-#define SAVE_IMG
+//#define SAVE_IMG
 #define USE_UART
 
 unsigned char *Input_1; //模型输入
 signed char *Output_1; //量化模型输出
 float *DqOutput; //解量化模型输出
 char sendbuf[128];
+uint32_t temp = 87654;
+box_trans_t result[5]; //串口输出结果
 
 AT_HYPERFLASH_FS_EXT_ADDR_TYPE __PREFIX(_L3_Flash) = 0;
 
@@ -108,14 +110,25 @@ int appstart()
         #endif
         
         //cluster run
+        memset(result, 0, sizeof(result));
         printf("Call cluster\n");
         cluster_run();
 
         //uart send
         #ifdef USE_UART
-        strcpy(sendbuf, "helloworld");
-        uart_send(sendbuf, sizeof(sendbuf));
-        pi_time_wait_us(500000); //500ms
+        // strcpy(sendbuf, "helloworld");
+        // uart_send(sendbuf, sizeof(sendbuf));
+        for(int i = 0; i < 5; i++)
+        {
+            printf("con: %f id: %d prob: %f [ %d, %d, %d, %d ] \n", result[i].box_conf, result[i].box_id, result[i].box_prob, \
+            (int)(result[i].box_trans_info[0]), (int)(result[i].box_trans_info[1]), (int)(result[i].box_trans_info[2]), (int)(result[i].box_trans_info[3]));
+            
+            if(result[i].box_conf > CON_THRESHOLD) 
+            {
+                uart_send(&result[i], sizeof(box_trans_t));       
+                pi_time_wait_us(100000); //100ms
+            }
+        }
         #endif   
         
     }

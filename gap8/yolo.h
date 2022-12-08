@@ -20,7 +20,7 @@
 #define IMG_H   224
 #define IMG_C   1
 #define IOU_THRESHOLD 0.5
-#define CON_THRESHOLD 0.0
+#define CON_THRESHOLD 0.2
 #define SCALE_FACTOR  0.00787402
 
 

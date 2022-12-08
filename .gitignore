@@ -1,1 +1,3 @@
 *.pgm
+crazyflie/build/*
+gap8/BUILD*

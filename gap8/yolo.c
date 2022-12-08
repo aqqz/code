@@ -10,6 +10,7 @@ float *DqOutput; //解量化模型输出
 extern unsigned char *Input_1; //模型输入
 extern signed char *Output_1; //量化模型输出
 extern float *DqOutput; //解量化模型输出
+extern box_trans_t result[5]; //串口输出结果
 #endif
 
 float max(float a, float b) { return a > b ? a : b; }
@@ -299,14 +300,25 @@ void resolve_output(void)
         }
     }
     nms(box_before, box_after);
-
+    cnt = 0;
     //print
     box_list_t *p = box_after;
     while(p->next != NULL)
     {
         p = p->next;
-        printf("con: %f id: %d prob: %f [ %d, %d, %d, %d ] \n", p->data->box_conf, p->data->box_id, p->data->box_prob, \
-        (int)(p->data->box_trans_info[0]), (int)(p->data->box_trans_info[1]), (int)(p->data->box_trans_info[2]), (int)(p->data->box_trans_info[3]));
+        // printf("con: %f id: %d prob: %f [ %d, %d, %d, %d ] \n", p->data->box_conf, p->data->box_id, p->data->box_prob, \
+        // (int)(p->data->box_trans_info[0]), (int)(p->data->box_trans_info[1]), (int)(p->data->box_trans_info[2]), (int)(p->data->box_trans_info[3]));
+        
+        //copy value to uart buffer
+        result[cnt].box_conf = p->data->box_conf;
+        result[cnt].box_id = p->data->box_id;
+        result[cnt].box_prob = p->data->box_prob;
+        result[cnt].box_trans_info[0] = p->data->box_trans_info[0];
+        result[cnt].box_trans_info[1] = p->data->box_trans_info[1];
+        result[cnt].box_trans_info[2] = p->data->box_trans_info[2];
+        result[cnt].box_trans_info[3] = p->data->box_trans_info[3];
+        cnt++;
+        
     }
 
     printf("free memory!\n");
